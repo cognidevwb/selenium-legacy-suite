@@ -6,6 +6,40 @@ locators, and an explicit `WebDriverWait` before every assertion. It is the
 input to the **AI-native test migration** playbook (target: code-grounded
 Playwright + MCP).
 
+## Running
+
+Requires JDK 17+ and a live environment at `base.url`
+(`src/test/resources/config.properties`). Browsers are provisioned by
+WebDriverManager — no manual driver download.
+
+```bash
+mvn test                          # full suite (smoke + regression + legacy)
+mvn test -Dbrowser=chrome         # explicit browser (default)
+mvn test -Dbrowser=firefox        # the one other browser we support
+mvn test -Dheadless=true          # CI mode
+mvn test -Dgroups=smoke           # fast gate only
+mvn test -Dgroups=regression      # nightly set
+```
+
+`mvn test-compile` works offline (no environment needed). Failure
+screenshots land in `target/screenshots/` (only for tests extending
+`BaseTest` — the two pre-2021 classes manage their own driver and get
+none; known gap QA-1482).
+
+## Layout
+
+```
+src/test/java/com/acme/tests/
+├── support/           BaseTest, DriverFactory, ConfigReader,
+│                      ScreenshotListener (PNG on failure), RetryAnalyzer
+├── pageobjects/       raw-By page objects (Login, Checkout, Product,
+│                      Cart, SearchResults, Account, OrderHistory)
+└── *Test.java         TestNG classes; groups = smoke / regression
+src/test/resources/
+├── config.properties  base URL, timeouts, seeded QA account
+└── testdata/declined-cards.csv   DataProvider input for declined-card matrix
+```
+
 ## What makes it brittle (the migration worklist)
 
 | Smell in this suite | What the migration does |

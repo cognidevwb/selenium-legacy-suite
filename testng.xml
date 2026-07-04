@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- No parallel attribute on purpose: BaseTest stashes the driver in a
+     static field for ScreenshotListener, so parallel execution corrupts
+     screenshots. Do not add parallel="methods". -->
 <suite name="store-e2e" verbose="1">
+
+    <listeners>
+        <listener class-name="com.acme.tests.support.ScreenshotListener"/>
+    </listeners>
+
+    <!-- Fast gate: run with  mvn test -Dgroups=smoke  or this <test> alone -->
     <test name="smoke">
+        <groups>
+            <run>
+                <include name="smoke"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.acme.tests.CartTest"/>
+            <class name="com.acme.tests.CheckoutHappyPathTest"/>
+            <class name="com.acme.tests.SearchAndFilterTest"/>
+            <class name="com.acme.tests.OrderHistoryTest"/>
+        </classes>
+    </test>
+
+    <!-- Nightly regression: everything tagged regression -->
+    <test name="regression">
+        <groups>
+            <run>
+                <include name="regression"/>
+            </run>
+        </groups>
+        <classes>
+            <class name="com.acme.tests.CartTest"/>
+            <class name="com.acme.tests.CheckoutHappyPathTest"/>
+            <class name="com.acme.tests.CheckoutDeclinedCardTest"/>
+            <class name="com.acme.tests.SearchAndFilterTest"/>
+            <class name="com.acme.tests.AccountProfileTest"/>
+            <class name="com.acme.tests.OrderHistoryTest"/>
+        </classes>
+    </test>
+
+    <!-- Pre-2021 classes: no groups, own driver lifecycle, no screenshots.
+         Kept in their own <test> so group filtering doesn't drop them. -->
+    <test name="legacy-ungrouped">
         <classes>
             <class name="com.acme.tests.LoginTest"/>
             <class name="com.acme.tests.CheckoutTest"/>

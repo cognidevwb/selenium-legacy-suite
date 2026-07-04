@@ -1,0 +1,5 @@
+cardNumber,expiry,cvv,expectedError
+4000000000000002,12/27,123,Your card was declined
+4000000000009995,11/28,456,Insufficient funds
+4000000000000069,09/24,789,Your card has expired
+4000000000000127,10/27,321,Incorrect CVC code
